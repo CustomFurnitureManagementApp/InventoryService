@@ -1,7 +1,6 @@
 using InventoryService.Infrastructure.Extensions;
 using InventoryService.Infrastructure.Persistence;
 using InventoryService.Repositories.Extensions;
-using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +15,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddRepositories(builder.Configuration);
 
-// Register MediatR core and handlers via Scrutor (scan the Services assembly)
-builder.Services.AddSingleton<IMediator, Mediator>();
+builder.Services.AddMediatR(cfg =>
+{
+	cfg.RegisterServicesFromAssembly(typeof(InventoryService.Application.AssemblyReference).Assembly);
+});
 
 var app = builder.Build();
 

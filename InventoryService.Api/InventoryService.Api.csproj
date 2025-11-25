@@ -10,16 +10,16 @@
 		<PackageReference Include="MediatR" Version="13.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Scrutor" Version="7.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\InventoryService.Application\InventoryService.Application.csproj" />
 		<ProjectReference Include="..\InventoryService.Domain\InventoryService.Domain.csproj" />
-		<ProjectReference Include="..\InventoryService.Services\InventoryService.Services.csproj" />
 	</ItemGroup>
 
 </Project>

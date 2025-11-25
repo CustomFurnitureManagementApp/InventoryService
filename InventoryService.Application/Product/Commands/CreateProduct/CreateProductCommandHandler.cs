@@ -2,7 +2,7 @@
 using InventoryService.Repositories.Product;
 using MediatR;
 
-namespace InventoryService.Services.Product.Commands.CreateProduct
+namespace InventoryService.Application.Product.Commands.CreateProduct
 {
 	public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
 	{

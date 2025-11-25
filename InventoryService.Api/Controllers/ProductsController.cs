@@ -1,6 +1,6 @@
-﻿using InventoryService.Services.Product.Commands.CreateProduct;
-using InventoryService.Services.Product.Queries.GetProductById;
-using InventoryService.Services.Product.Queries.GetProducts;
+﻿using InventoryService.Application.Product.Commands.CreateProduct;
+using InventoryService.Application.Product.Queries.GetProductById;
+using InventoryService.Application.Product.Queries.GetProducts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

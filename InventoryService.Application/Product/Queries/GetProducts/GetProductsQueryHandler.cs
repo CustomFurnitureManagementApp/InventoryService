@@ -2,7 +2,7 @@
 using InventoryService.Repositories.Product;
 using MediatR;
 
-namespace InventoryService.Services.Product.Queries.GetProducts
+namespace InventoryService.Application.Product.Queries.GetProducts
 {
 	public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, IReadOnlyList<ProductDto>>
 	{
