@@ -25,5 +25,8 @@ namespace InventoryService.Domain.Entities
 		public Supplier? Supplier { get; set; }
 
 		public ICollection<ProductMaterial> ProductMaterials { get; set; } = new List<ProductMaterial>();
-	}
+
+        public int InvoiceId { get; set; } // FK
+        public Invoice? Invoice { get; set; }
+    }
 }

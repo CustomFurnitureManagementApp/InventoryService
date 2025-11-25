@@ -1,4 +1,4 @@
-﻿namespace InventoryService.Domain.DTOs
+﻿namespace InventoryService.Domain.DTOs.Product
 {
 	public sealed class ProductDto
 	{

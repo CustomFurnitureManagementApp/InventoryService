@@ -1,6 +1,7 @@
 using InventoryService.Infrastructure.Extensions;
 using InventoryService.Infrastructure.Persistence;
 using InventoryService.Repositories.Extensions;
+using InventoryService.Services.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.AddOpenApi();
 // register EF Core / infrastructure
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddRepositories(builder.Configuration);
+builder.Services.AddServices(builder.Configuration);
 
 builder.Services.AddMediatR(cfg =>
 {

@@ -17,8 +17,9 @@ namespace InventoryService.Infrastructure
 		public DbSet<StockItem> StockItems { get; set; } = null!;
 		public DbSet<InventoryTransaction> InventoryTransactions { get; set; } = null!;
 		public DbSet<BomItem> BomItems { get; set; } = null!;
+        public DbSet<Invoice> Invoices { get; set; } = null!;
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			// Product
 			modelBuilder.Entity<Product>(b =>
@@ -119,7 +120,19 @@ namespace InventoryService.Infrastructure
 				b.HasOne(x => x.ComponentMaterial).WithMany().HasForeignKey(x => x.ComponentMaterialId).OnDelete(DeleteBehavior.Restrict);
 			});
 
-			base.OnModelCreating(modelBuilder);
+			// Invoice
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasKey(i => i.Id);
+                entity.Property(i => i.InvoiceNumber).IsRequired().HasMaxLength(50);
+
+                entity.HasMany(i => i.Materials)
+                      .WithOne(m => m.Invoice)
+                      .HasForeignKey(m => m.InvoiceId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            base.OnModelCreating(modelBuilder);
 		}
 	}
 }
