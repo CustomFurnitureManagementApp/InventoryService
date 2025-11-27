@@ -1,6 +1,6 @@
-﻿using InventoryService.Application.Product.Commands.CreateProduct;
-using InventoryService.Application.Product.Queries.GetProductById;
-using InventoryService.Application.Product.Queries.GetProducts;
+﻿using InventoryService.Application.Features.Products.Commands.CreateProduct;
+using InventoryService.Application.Features.Products.Queries.GetProductById;
+using InventoryService.Application.Features.Products.Queries.GetProducts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,12 +8,11 @@ namespace InventoryService.Api.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class ProductsController : ControllerBase
+	public class ProductsController(IMediator mediator) : ControllerBase
 	{
-		private readonly IMediator _mediator;
-		public ProductsController(IMediator mediator) => _mediator = mediator;
+		private readonly IMediator _mediator = mediator;
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Get()
 		{
 			var result = await _mediator.Send(new GetProductsQuery());
