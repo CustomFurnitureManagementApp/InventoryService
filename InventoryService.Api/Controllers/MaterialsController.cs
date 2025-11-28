@@ -21,7 +21,10 @@ namespace InventoryService.Api.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] CreateMaterialCommand command)
 		{
-			var created = await _mediator.Send(command);
+            if (command == null)
+                return BadRequest();
+
+            var created = await _mediator.Send(command);
 			return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
 		}
 	}
