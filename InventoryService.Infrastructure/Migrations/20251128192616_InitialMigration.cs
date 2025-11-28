@@ -23,7 +23,11 @@ namespace InventoryService.Infrastructure.Migrations
                     Specification = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LengthMm = table.Column<int>(type: "int", nullable: true),
                     WidthMm = table.Column<int>(type: "int", nullable: true),
-                    UnitOfMeasure = table.Column<int>(type: "int", nullable: false)
+                    UnitOfMeasure = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,7 +43,11 @@ namespace InventoryService.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     LocationType = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -55,7 +63,11 @@ namespace InventoryService.Infrastructure.Migrations
                     MaterialId = table.Column<int>(type: "int", nullable: false),
                     PriceWithoutVAT = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     PriceWithVAT = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
-                    InvoiceNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    InvoiceNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,7 +89,11 @@ namespace InventoryService.Infrastructure.Migrations
                     MaterialId = table.Column<int>(type: "int", nullable: false),
                     WarehouseId = table.Column<int>(type: "int", nullable: false),
                     QuantityOnHand = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
-                    QuantityReserved = table.Column<decimal>(type: "decimal(18,4)", nullable: false)
+                    QuantityReserved = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -111,7 +127,11 @@ namespace InventoryService.Infrastructure.Migrations
                     ReferenceDocument = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ProductionOrderId = table.Column<int>(type: "int", nullable: true),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    PerformedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    PerformedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {

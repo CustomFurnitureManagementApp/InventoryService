@@ -5,10 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InventoryService.Domain.Entities.Transactional
 {
-    public class StockTransaction
+    public class StockTransaction : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required]
         public int MaterialId { get; set; }
         public Material Material { get; set; } = null!;

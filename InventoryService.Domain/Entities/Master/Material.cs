@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace InventoryService.Domain.Entities.Master
 {
-    public class Material
+    public class Material : BaseEntity
     {
-        public int Id { get; set; }
-
         public string? Code { get; set; } = null!;
 
         [Required, MaxLength(100)]

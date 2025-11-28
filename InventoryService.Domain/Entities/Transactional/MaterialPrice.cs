@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InventoryService.Domain.Entities.Transactional
 {
-    public class MaterialPrice
+    public class MaterialPrice : BaseEntity
     {
-        public int Id { get; set; }
-
         public int MaterialId { get; set; }
         public Material Material { get; set; } = null!;
 

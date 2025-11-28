@@ -1,4 +1,5 @@
-﻿using InventoryService.Application.Features.Material.Queries.GetMaterials;
+﻿using InventoryService.Application.Features.Material.Commands.CreateMaterial;
+using InventoryService.Application.Features.Material.Queries.GetMaterials;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,11 @@ namespace InventoryService.Api.Controllers
 			return Ok(result);
 		}
 
-		//[HttpPost]
-		//public async Task<IActionResult> Create([FromBody] CreateMaterialCommand command)
-		//{
-		//	var created = await _mediator.Send(command);
-		//	return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
-		//}
+		[HttpPost]
+		public async Task<IActionResult> Create([FromBody] CreateMaterialCommand command)
+		{
+			var created = await _mediator.Send(command);
+			return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+		}
 	}
 }

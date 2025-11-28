@@ -1,4 +1,5 @@
-﻿using InventoryService.Infrastructure.Data;
+﻿using InventoryService.Domain.Interfaces;
+using InventoryService.Infrastructure.Data;
 using InventoryService.Infrastructure.Repositories;
 using InventoryService.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,8 @@ namespace InventoryService.Infrastructure.DependencyInjection
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseSqlServer(connectionString));
 
-			services.AddTransient<IMaterialRepository, MaterialRepository>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IMaterialRepository, MaterialRepository>();
             return services;
 		}
 	}
