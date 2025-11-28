@@ -1,4 +1,5 @@
-﻿using InventoryService.Domain.Entities;
+﻿using InventoryService.Domain.Entities.Master;
+using InventoryService.Domain.Entities.Transactional;
 using InventoryService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,131 +8,95 @@ namespace InventoryService.Infrastructure.Data.DataSeeder
 {
     public static class DataSeeder
     {
-        public static async Task SeedAsync(IServiceProvider serviceProvider)
+        public static async Task SeedAsync(IServiceProvider services)
         {
-            using var scope = serviceProvider.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            using var scope = services.CreateScope();
+            var provider = scope.ServiceProvider;
 
-            // ensure database is created (migrations will be applied later)  
-            await db.Database.MigrateAsync();
+            var context = provider.GetRequiredService<AppDbContext>();
 
-            if (await db.Categories.AnyAsync()) return; // simple guard to avoid reseed  
+            // --- Check if database already has data ---
+            bool hasData = await context.Materials.AnyAsync()
+                            || await context.Warehouses.AnyAsync()
+                            || await context.MaterialStocks.AnyAsync()
+                            || await context.MaterialPrices.AnyAsync()
+                            || await context.StockTransactions.AnyAsync();
 
-            // Categories  
-            var kitchen = new Category { Name = "Kitchen" };
-            var living = new Category { Name = "Living Room" };
-            var bathroom = new Category { Name = "Bathroom" };
-            db.Categories.AddRange(kitchen, living, bathroom);
+            if (hasData)
+                return; // Data already exists, do not seed again
 
-            // Suppliers  
-            var supplier1 = new Supplier { Name = "Main Supplies Co.", ContactName = "Maria", Email = "maria@supplies.local" };
-            db.Suppliers.Add(supplier1);
-
-            // Invoice seed  
-            var invoice1 = new Invoice
+            try
             {
-                InvoiceNumber = "INV-001",
-                IssueDate = DateTime.Now,
-                SupplierName = supplier1.Name,
-                SupplierCompanyID = "123456789",
-                InvoiceTypeCode = "STANDARD",
-                Currency = "USD",
-                LineExtensionAmount = 100m,
-                TaxExclusiveAmount = 100m,
-                TaxInclusiveAmount = 110m,
-                PayableAmount = 110m
+                // --- MATERIALS ---
+                var materials = new List<Material>
+            {
+                new Material { Name = "White MDF 18mm", Code = "MDF18W", UnitOfMeasure = UnitOfMeasure.Piece },
+                new Material { Name = "Oak Pal 18mm", Code = "PAL18OAK", UnitOfMeasure = UnitOfMeasure.Piece },
+                new Material { Name = "Edge Band 0.8mm", Code = "EB08", UnitOfMeasure = UnitOfMeasure.Piece },
             };
-            db.Invoices.Add(invoice1);
-            await db.SaveChangesAsync(); // trebuie pentru a avea Id  
+                await context.Materials.AddRangeAsync(materials);
+                await context.SaveChangesAsync();
 
-            // Materials (cu InvoiceId setat)  
-            var pal = new Material
+                // --- WAREHOUSES ---
+                var warehouses = new List<Warehouse>
             {
-                Name = "PAL Board 18mm",
-                MaterialType = MaterialType.PAL,
-                Specification = "18mm raw",
-                UnitCost = 15.00m,
-                UnitOfMeasure = UnitOfMeasure.SquareMeter,
-                Supplier = supplier1,
-                InvoiceId = invoice1.Id
+                new Warehouse { Name = "Main Warehouse", Description = "Factory" },
+                new Warehouse { Name = "Secondary Warehouse", Description = "Showroom" }
             };
+                await context.Warehouses.AddRangeAsync(warehouses);
+                await context.SaveChangesAsync();
 
-            var mdf = new Material
+                // Fetch IDs for relations
+                var material1 = await context.Materials.FirstAsync();
+                var warehouse1 = await context.Warehouses.FirstAsync();
+
+                // --- MATERIAL PRICES ---
+                var prices = new List<MaterialPrice>
             {
-                Name = "MDF 18mm",
-                MaterialType = MaterialType.MDF,
-                Specification = "18mm raw",
-                UnitCost = 12.50m,
-                UnitOfMeasure = UnitOfMeasure.SquareMeter,
-                Supplier = supplier1,
-                InvoiceId = invoice1.Id
+                new MaterialPrice
+                {
+                    MaterialId = material1.Id,
+                    PriceWithoutVAT = 100,
+                    PriceWithVAT = 119,
+                    InvoiceNumber = "INV-001"
+                }
             };
+                await context.MaterialPrices.AddRangeAsync(prices);
+                await context.SaveChangesAsync();
 
-            db.Materials.AddRange(pal, mdf);
-
-            // Warehouse  
-            var mainWh = new Warehouse { Name = "Main Warehouse", Address = "Factory - Zone A" };
-            db.Warehouses.Add(mainWh);
-
-            await db.SaveChangesAsync();
-
-            // Example product  
-            var baseProduct = new Product
+                // --- MATERIAL STOCK ---
+                var stocks = new List<MaterialStock>
             {
-                SKU = "KIT-BASE-001",
-                Name = "Base Kitchen Cabinet (600mm)",
-                Description = "Standard base cabinet used in kitchens.",
-                Price = 250.00m,
-                Cost = 120.00m,
-                Quantity = 10,
-                Category = kitchen,
-                IsCustom = true,
-                IsActive = true
+                new MaterialStock
+                {
+                    MaterialId = material1.Id,
+                    WarehouseId = warehouse1.Id,
+                    QuantityOnHand = 50,
+                    QuantityReserved = 5
+                }
             };
-            db.Products.Add(baseProduct);
-            await db.SaveChangesAsync();
+                await context.MaterialStocks.AddRangeAsync(stocks);
+                await context.SaveChangesAsync();
 
-            // Variant  
-            var variant = new ProductVariant
+                // --- STOCK TRANSACTIONS ---
+                var transaction = new StockTransaction
+                {
+                    MaterialId = material1.Id,
+                    WarehouseId = warehouse1.Id,
+                    TransactionType = StockTransactionType.PurchaseIn,
+                    Quantity = 50,
+                    UnitPrice = 100,
+                    TotalValue = 5000,
+                    ReferenceDocument = "PO-001",
+                    PerformedBy = "system"
+                };
+                await context.StockTransactions.AddAsync(transaction);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
             {
-                ProductId = baseProduct.Id,
-                Name = "White Lacquer Finish",
-                SKU = "KIT-BASE-001-WH",
-                AdditionalCost = 25.00m
-            };
-            db.ProductVariants.Add(variant);
-            await db.SaveChangesAsync();
-
-            // ProductMaterial linking product -> materials  
-            db.ProductMaterials.Add(new ProductMaterial
-            {
-                ProductId = baseProduct.Id,
-                MaterialId = pal.Id,
-                Quantity = 1.5m,
-                UnitOfMeasure = UnitOfMeasure.SquareMeter,
-                WasteFactor = 0.10m
-            });
-            db.ProductMaterials.Add(new ProductMaterial
-            {
-                ProductId = baseProduct.Id,
-                MaterialId = mdf.Id,
-                Quantity = 0.5m,
-                UnitOfMeasure = UnitOfMeasure.SquareMeter,
-                WasteFactor = 0.08m
-            });
-
-            // Initial stock item  
-            db.StockItems.Add(new StockItem
-            {
-                ProductVariantId = variant.Id,
-                WarehouseId = mainWh.Id,
-                Quantity = 10m,
-                ReservedQuantity = 0m,
-                AverageCost = 120.00m
-            });
-
-            await db.SaveChangesAsync();
+                throw new Exception("An error occurred while seeding the Inventory database.", ex);
+            }
         }
     }
-
 }

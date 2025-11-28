@@ -1,6 +1,6 @@
 ﻿using InventoryService.Infrastructure.Data;
+using InventoryService.Infrastructure.Repositories;
 using InventoryService.Repositories;
-using InventoryService.Repositories.Product;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,8 +20,7 @@ namespace InventoryService.Infrastructure.DependencyInjection
 			services.AddDbContext<AppDbContext>(options =>
 				options.UseSqlServer(connectionString));
 
-			services.AddTransient<IProductRepository, ProductRepository>();
-            services.AddTransient<IInvoiceRepository, InvoiceRepository>();
+			services.AddTransient<IMaterialRepository, MaterialRepository>();
             return services;
 		}
 	}

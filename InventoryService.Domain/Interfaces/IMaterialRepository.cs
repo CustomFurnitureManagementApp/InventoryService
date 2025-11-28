@@ -1,11 +1,14 @@
-﻿using InventoryService.Domain.Entities;
+﻿using InventoryService.Domain.Entities.Master;
 
 namespace InventoryService.Repositories
 {
     public interface IMaterialRepository
     {
-        Task<Material?> GetByNameAndPriceAsync(string name, decimal price);
+        Task<Material?> GetByIdAsync(int id);
+        Task<IReadOnlyList<Material>> ListAsync();
         Task AddAsync(Material material);
-        Task UpdateAsync(Material material);
+        void Update(Material material);
+        void Remove(Material material);
+        Task<int> SaveChangesAsync();
     }
 }

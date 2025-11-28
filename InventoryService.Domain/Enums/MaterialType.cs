@@ -4,7 +4,7 @@
 	{
 		PAL = 0,
 		MDF = 1,
-		Veneer = 2,
+		EdgeBand = 2,
 		Hardware = 3,
 		Finish = 4,
 		Other = 99

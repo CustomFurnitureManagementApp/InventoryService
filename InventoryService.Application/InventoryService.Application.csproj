@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Features\Material\Commands\CreateMaterial\" />
 	  <Folder Include="Validators\" />
 	</ItemGroup>
 
