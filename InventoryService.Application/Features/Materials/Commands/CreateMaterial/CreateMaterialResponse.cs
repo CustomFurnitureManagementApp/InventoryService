@@ -1,8 +1,8 @@
 ﻿using InventoryService.Domain.Enums;
 
-namespace InventoryService.Application.Features.Material.Commands.CreateMaterial
+namespace InventoryService.Application.Features.Materials.Commands.CreateMaterial
 {
-    public class CreateMaterialResponse
+    public sealed class CreateMaterialResponse
     {
         public int Id { get; set; }
         public string Code { get; set; } = null!;

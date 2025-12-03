@@ -1,13 +1,23 @@
-﻿using InventoryService.Domain.Interfaces;
+﻿using AutoMapper;
+using InventoryService.Application.Common;
+using InventoryService.Application.Features.Materials.Queries.GetMaterialById;
+using InventoryService.Domain.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
-namespace InventoryService.Application.Features.Material.Commands.CreateMaterial
+namespace InventoryService.Application.Features.Materials.Commands.CreateMaterial
 {
-    public class CreateMaterialCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateMaterialCommand, CreateMaterialResponse>
+    public class CreateMaterialCommandHandler(
+        IUnitOfWork unitOfWork,
+        ILogger<GetMaterialByIdQueryHandler> logger,
+        IMapper mapper) :
+        IRequestHandler<CreateMaterialCommand, Result<CreateMaterialResponse>>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ILogger<GetMaterialByIdQueryHandler> _logger = logger;
+        private readonly IMapper _mapper = mapper;
 
-        public async Task<CreateMaterialResponse> Handle(CreateMaterialCommand request, CancellationToken cancellationToken)
+        public async Task<Result<CreateMaterialResponse>> Handle(CreateMaterialCommand request, CancellationToken cancellationToken)
         {
             var material = new Domain.Entities.Master.Material
             {
@@ -23,17 +33,8 @@ namespace InventoryService.Application.Features.Material.Commands.CreateMaterial
             await _unitOfWork.Materials.AddAsync(material);
             await _unitOfWork.Materials.SaveChangesAsync();
 
-            return new CreateMaterialResponse
-            {
-                Id = material.Id,
-                Code = material.Code,
-                Name = material.Name,
-                MaterialType = material.MaterialType,
-                Specification = material.Specification,
-                LengthMm = material.LengthMm,
-                WidthMm = material.WidthMm,
-                UnitOfMeasure = material.UnitOfMeasure
-            };
+            var response = _mapper.Map<CreateMaterialResponse>(material);
+            return Result<CreateMaterialResponse>.Success(response);
         }
     }
 }

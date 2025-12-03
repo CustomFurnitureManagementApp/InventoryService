@@ -1,5 +1,5 @@
 ﻿using FluentValidation.TestHelper;
-using InventoryService.Application.Features.Material.Commands.CreateMaterial;
+using InventoryService.Application.Features.Materials.Commands.CreateMaterial;
 using InventoryService.Domain.Enums;
 
 namespace InventoryService.UnitTests.Validators.Materials

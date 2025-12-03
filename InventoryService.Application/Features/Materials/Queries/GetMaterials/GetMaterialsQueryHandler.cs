@@ -1,26 +1,33 @@
-﻿using InventoryService.Domain.Interfaces;
+﻿using AutoMapper;
+using InventoryService.Application.Common;
+using InventoryService.Application.Features.Materials.Queries.GetMaterialById;
+using InventoryService.Domain.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
-namespace InventoryService.Application.Features.Material.Queries.GetMaterials
+namespace InventoryService.Application.Features.Materials.Queries.GetMaterials
 {
-    public class GetMaterialsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetMaterialsQuery, IReadOnlyList<GetMaterialsResponse>>
+    public class GetMaterialsQueryHandler(
+        IUnitOfWork unitOfWork, 
+        ILogger<GetMaterialByIdQueryHandler> logger, 
+        IMapper mapper) : 
+        IRequestHandler<GetMaterialsQuery, Result<IReadOnlyList<GetMaterialsResponse>>>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ILogger<GetMaterialByIdQueryHandler> _logger = logger;
+        private readonly IMapper _mapper = mapper;
 
-        public async Task<IReadOnlyList<GetMaterialsResponse>> Handle(GetMaterialsQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IReadOnlyList<GetMaterialsResponse>>> Handle(GetMaterialsQuery request, CancellationToken cancellationToken)
         {
-            var entities = await _unitOfWork.Materials.ListAsync();
-            var dtos = entities.Select(e => new GetMaterialsResponse
+            var materialEntities = await _unitOfWork.Materials.ListAsync();
+            if (materialEntities == null)
             {
-                Id = e.Id,
-                Code = e.Code,
-                Name = e.Name,
-                MaterialType = e.MaterialType,
-                Specification = e.Specification,
-                UnitOfMeasure = e.UnitOfMeasure
-            }).ToList();
+                _logger.LogWarning("Handler: There are no materials in the database");
+                return Result<IReadOnlyList<GetMaterialsResponse>>.Failure(ErrorMessages.NoMaterials);
+            }
+            var materials = _mapper.Map<List<GetMaterialsResponse>>(materialEntities);
 
-            return dtos;
+            return Result<IReadOnlyList<GetMaterialsResponse>>.Success(materials);
         }
     }
 }

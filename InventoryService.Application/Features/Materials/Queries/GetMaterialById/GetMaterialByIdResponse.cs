@@ -1,8 +1,8 @@
 ﻿using InventoryService.Domain.Enums;
 
-namespace InventoryService.Application.Features.Materials.Queries.GetMaterials
+namespace InventoryService.Application.Features.Materials.Queries.GetMaterialById
 {
-    public sealed class GetMaterialsResponse
+    public sealed class GetMaterialByIdResponse
     {
         public int Id { get; init; }
         public string? Code { get; init; } = null!;

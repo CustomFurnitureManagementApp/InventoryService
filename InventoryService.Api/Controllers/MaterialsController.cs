@@ -1,5 +1,6 @@
-﻿using InventoryService.Application.Features.Material.Commands.CreateMaterial;
-using InventoryService.Application.Features.Material.Queries.GetMaterials;
+﻿using InventoryService.Application.Features.Materials.Commands.CreateMaterial;
+using InventoryService.Application.Features.Materials.Queries.GetMaterialById;
+using InventoryService.Application.Features.Materials.Queries.GetMaterials;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,21 +12,37 @@ namespace InventoryService.Api.Controllers
 	{
 		private readonly IMediator _mediator = mediator;
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMaterialById(int id)
+        {
+            var result = await _mediator.Send(new GetMaterialByIdQuery(id));
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Value);
+        }
+
         [HttpGet]
-		public async Task<IActionResult> Get()
+		public async Task<IActionResult> GetAllMaterials()
 		{
 			var result = await _mediator.Send(new GetMaterialsQuery());
-			return Ok(result);
+            if (!result.IsSuccess)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Value);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] CreateMaterialCommand command)
+		public async Task<IActionResult> CreateMaterial([FromBody] CreateMaterialCommand command)
 		{
             if (command == null)
                 return BadRequest();
 
             var created = await _mediator.Send(command);
-			return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+            if (!created.IsSuccess)
+                return BadRequest(created.ErrorMessage);
+
+            return CreatedAtAction(nameof(GetAllMaterials), new { id = created.Value?.Id }, created.Value);
 		}
 	}
 }

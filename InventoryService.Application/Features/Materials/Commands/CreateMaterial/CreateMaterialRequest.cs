@@ -1,9 +1,9 @@
 ﻿using InventoryService.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace InventoryService.Application.Features.Material.Commands.CreateMaterial
+namespace InventoryService.Application.Features.Materials.Commands.CreateMaterial
 {
-    public class CreateMaterialRequest
+    public sealed class CreateMaterialRequest
     {
         [Required]
         [MaxLength(50)]

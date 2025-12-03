@@ -1,9 +1,10 @@
-﻿using InventoryService.Domain.Enums;
+﻿using InventoryService.Application.Common;
+using InventoryService.Domain.Enums;
 using MediatR;
 
-namespace InventoryService.Application.Features.Material.Commands.CreateMaterial
+namespace InventoryService.Application.Features.Materials.Commands.CreateMaterial
 {
-    public class CreateMaterialCommand : IRequest<CreateMaterialResponse>
+    public class CreateMaterialCommand : IRequest<Result<CreateMaterialResponse>>
     {
         public string Code { get; set; } = null!;
         public string Name { get; set; } = null!;

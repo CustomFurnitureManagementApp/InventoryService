@@ -1,8 +1,10 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using InventoryService.Api.Controllers;
-using InventoryService.Application.Features.Material.Commands.CreateMaterial;
-using InventoryService.Application.Features.Material.Queries.GetMaterials;
+using InventoryService.Application.Common;
+using InventoryService.Application.Features.Materials.Commands.CreateMaterial;
+using InventoryService.Application.Features.Materials.Queries.GetMaterialById;
+using InventoryService.Application.Features.Materials.Queries.GetMaterials;
 using InventoryService.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -49,11 +51,12 @@ namespace InventoryService.UnitTests.Controllers
                 }
             };
 
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetMaterialsQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(materials);
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetMaterialsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<IReadOnlyList<GetMaterialsResponse>>.Success(materials));
 
             // Act
-            var result = await _controller.Get();
+            var result = await _controller.GetAllMaterials();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -74,11 +77,12 @@ namespace InventoryService.UnitTests.Controllers
         public async Task Get_ReturnsOk_WithEmptyList_WhenNoMaterials()
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetMaterialsQuery>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new List<GetMaterialsResponse>());
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetMaterialsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<IReadOnlyList<GetMaterialsResponse>>.Success(new List<GetMaterialsResponse>()));
 
             // Act
-            var result = await _controller.Get();
+            var result = await _controller.GetAllMaterials();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -87,7 +91,7 @@ namespace InventoryService.UnitTests.Controllers
         }
 
         [Fact]
-        public async Task Create_ReturnsCreatedResult_WhenValidCommand()
+        public async Task CreateMaterial_ReturnsCreatedResult_WhenValidCommand()
         {
             // Arrange
             var command = new CreateMaterialCommand
@@ -112,12 +116,13 @@ namespace InventoryService.UnitTests.Controllers
                 LengthMm = 2800,
                 WidthMm = 2070
             };
+            var mediatorResult = Result<CreateMaterialResponse>.Success(response);
 
             _mediatorMock.Setup(m => m.Send(It.IsAny<CreateMaterialCommand>(), It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(response);
+                         .ReturnsAsync(mediatorResult);
 
             // Act
-            var result = await _controller.Create(command);
+            var result = await _controller.CreateMaterial(command);
 
             // Assert
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -135,7 +140,7 @@ namespace InventoryService.UnitTests.Controllers
         }
 
         [Fact]
-        public async Task Create_Throws_WhenMediatorThrowsException()
+        public async Task CreateMaterial_Throws_WhenMediatorThrowsException()
         {
             // Arrange
             var command = _fixture.Build<CreateMaterialCommand>().Create();
@@ -144,17 +149,67 @@ namespace InventoryService.UnitTests.Controllers
                          .ThrowsAsync(new InvalidOperationException("Mediator error"));
 
             // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.Create(command));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _controller.CreateMaterial(command));
         }
 
         [Fact]
-        public async Task Create_ReturnsBadRequest_WhenCommandIsNull()
+        public async Task CreateMaterial_ReturnsBadRequest_WhenCommandIsNull()
         {
             // Act
-            var result = await _controller.Create(null!);
+            var result = await _controller.CreateMaterial(null!);
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
         }
+
+        [Fact]
+        public async Task GetMaterialById_ReturnsOk_WhenMaterialExists()
+        {
+            // Arrange
+            int materialId = 1;
+            var material = new GetMaterialByIdResponse
+            {
+                Id = materialId,
+                Code = "MDF18W",
+                Name = "White MDF 18mm",
+                MaterialType = MaterialType.MDF,
+                UnitOfMeasure = UnitOfMeasure.Piece,
+                Specification = "Smooth"
+            };
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetMaterialByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<GetMaterialByIdResponse>.Success(material));
+
+            // Act
+            var result = await _controller.GetMaterialById(materialId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returned = Assert.IsType<GetMaterialByIdResponse>(okResult.Value);
+            Assert.Equal(materialId, returned.Id);
+            Assert.Equal("MDF18W", returned.Code);
+        }
+
+        [Fact]
+        public async Task GetMaterialById_ReturnsNotFound_WhenMaterialDoesNotExist()
+        {
+            // Arrange
+            int materialId = 99;
+
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<GetMaterialByIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<GetMaterialByIdResponse>.Failure("Material not found"));
+
+            // Act
+            var result = await _controller.GetMaterialById(materialId);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var returned = Assert.IsType<string>(notFoundResult.Value);
+            Assert.Equal("Material not found", returned);
+        }
+
+
     }
 }

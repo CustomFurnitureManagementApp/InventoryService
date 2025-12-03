@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace InventoryService.Application.Features.Material.Commands.CreateMaterial
+namespace InventoryService.Application.Features.Materials.Commands.CreateMaterial
 {
     public class CreateMaterialCommandValidator : AbstractValidator<CreateMaterialCommand>
     {

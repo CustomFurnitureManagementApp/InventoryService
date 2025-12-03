@@ -1,6 +1,7 @@
-﻿using MediatR;
+﻿using InventoryService.Application.Common;
+using MediatR;
 
-namespace InventoryService.Application.Features.Material.Queries.GetMaterials
+namespace InventoryService.Application.Features.Materials.Queries.GetMaterials
 {
-    public sealed record GetMaterialsQuery() : IRequest<IReadOnlyList<GetMaterialsResponse>>;
+    public sealed record GetMaterialsQuery() : IRequest<Result<IReadOnlyList<GetMaterialsResponse>>>;
 }
