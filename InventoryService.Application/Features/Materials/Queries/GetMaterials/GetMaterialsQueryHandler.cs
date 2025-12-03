@@ -25,7 +25,7 @@ namespace InventoryService.Application.Features.Materials.Queries.GetMaterials
                 _logger.LogWarning("Handler: There are no materials in the database");
                 return Result<IReadOnlyList<GetMaterialsResponse>>.Failure(ErrorMessages.NoMaterials);
             }
-            var materials = _mapper.Map<List<GetMaterialsResponse>>(materialEntities);
+            var materials = _mapper.Map<IReadOnlyList<GetMaterialsResponse>>(materialEntities);
 
             return Result<IReadOnlyList<GetMaterialsResponse>>.Success(materials);
         }

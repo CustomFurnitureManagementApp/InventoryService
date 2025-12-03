@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InventoryService.Application.Features.Materials.Commands.CreateMaterial;
 using InventoryService.Application.Features.Materials.Queries.GetMaterialById;
+using InventoryService.Application.Features.Materials.Queries.GetMaterials;
 using InventoryService.Domain.Entities.Master;
 
 namespace InventoryService.Application.Mapping
@@ -13,6 +14,8 @@ namespace InventoryService.Application.Mapping
             CreateMap<Material, CreateMaterialResponse>();
 
             CreateMap<Material, GetMaterialByIdResponse>();
+
+            CreateMap<Material, GetMaterialsResponse>();
         }
     }
 }
